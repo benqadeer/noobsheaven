@@ -1,0 +1,23 @@
+{
+    "name": "ranksgiving/rg-content-engine",
+    "description": "AI-powered WooCommerce and SEO automation plugin.",
+    "type": "wordpress-plugin",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "RanksGiving",
+            "email": "info@ranksgiving.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "RG\\ContentEngine\\": "includes/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "composer/installers": true
+        }
+    }
+}
