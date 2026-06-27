@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package    RG_Content_Engine
+ * @author     Abdur-Rehman Qadeer
+ * @copyright  2024 Abdur-Rehman Qadeer
+ * @license    Proprietary
+ */
 global $wpdb;
 $table = $wpdb->prefix . 'rg_ce_history';
 $history = $wpdb->get_results( "SELECT * FROM $table ORDER BY created_at DESC LIMIT 50", ARRAY_A );

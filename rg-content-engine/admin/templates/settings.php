@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package    RG_Content_Engine
+ * @author     Abdur-Rehman Qadeer
+ * @copyright  2024 Abdur-Rehman Qadeer
+ * @license    Proprietary
+ */
 $settings = get_option( 'rg_content_engine_settings', [] );
 ?>
 <div class="wrap">

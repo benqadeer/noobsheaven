@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package    RG_Content_Engine
+ * @author     Abdur-Rehman Qadeer
+ * @copyright  2024 Abdur-Rehman Qadeer
+ * @license    Proprietary
+ */
 $profiles = \RG\ContentEngine\Profiles\Profile::get_all();
 ?>
 <div class="wrap" id="rg-ce-profiles-app">

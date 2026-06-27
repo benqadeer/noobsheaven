@@ -1,10 +1,16 @@
 <?php
 /**
+ * @package    RG_Content_Engine
+ * @author     Abdur-Rehman Qadeer
+ * @copyright  2024 Abdur-Rehman Qadeer
+ * @license    Proprietary
+ */
+/**
  * Plugin Name: RG Content Engine
  * Plugin URI: https://ranksgiving.com/
  * Description: AI-powered WooCommerce and SEO automation plugin.
  * Version: 1.0.0
- * Author: RanksGiving
+ * Author: Abdur-Rehman Qadeer (RanksGiving)
  * Author URI: https://ranksgiving.com/
  * Text Domain: rg-content-engine
  * Domain Path: /languages
