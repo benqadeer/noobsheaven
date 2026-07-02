@@ -15,41 +15,62 @@ $profiles = \RG\ContentEngine\Profiles\Profile::get_all();
 		<h3 id="form-title">Add New Profile</h3>
 		<form id="rg-ce-profile-form">
 			<input type="hidden" name="id" id="profile-id">
-			<table class="form-table">
-				<tr>
-					<th><label>Profile Name</label></th>
-					<td><input type="text" name="name" id="profile-name" class="regular-text" required></td>
-				</tr>
-				<tr>
-					<th><label>AI Provider</label></th>
-					<td>
-						<select name="provider" id="profile-provider">
-							<option value="openai">OpenAI</option>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<th><label>Model</label></th>
-					<td>
-						<select name="model" id="profile-model">
-							<option value="gpt-4o">GPT-4o</option>
-							<option value="gpt-4-turbo">GPT-4 Turbo</option>
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<th><label>Prompt Template</label></th>
-					<td>
-						<textarea name="prompt" id="profile-prompt" rows="5" class="large-text" placeholder="Use {title}, {keyword}, etc."></textarea>
-					</td>
-				</tr>
-				<tr>
-					<th><label>HTML Blueprint</label></th>
-					<td>
-						<textarea name="html_blueprint" id="profile-html-blueprint" rows="10" class="large-text" placeholder="<h2>{title}</h2>..."></textarea>
-					</td>
-				</tr>
-			</table>
+			<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+				<div>
+					<table class="form-table">
+						<tr>
+							<th><label>Profile Name</label></th>
+							<td><input type="text" name="name" id="profile-name" class="regular-text" required></td>
+						</tr>
+						<tr>
+							<th><label>AI Provider</label></th>
+							<td>
+								<select name="provider" id="profile-provider">
+									<option value="openai">OpenAI</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th><label>Model</label></th>
+							<td>
+								<select name="model" id="profile-model">
+									<option value="gpt-4o">GPT-4o</option>
+									<option value="gpt-4-turbo">GPT-4 Turbo</option>
+									<option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th><label>Writing Style</label></th>
+							<td><input type="text" name="writing_style" id="profile-writing-style" class="regular-text" placeholder="Professional, Humorous, etc."></td>
+						</tr>
+						<tr>
+							<th><label>Temperature</label></th>
+							<td><input type="number" name="temperature" id="profile-temperature" step="0.1" min="0" max="1" value="0.7"></td>
+						</tr>
+						<tr>
+							<th><label>Max Tokens</label></th>
+							<td><input type="number" name="max_tokens" id="profile-max-tokens" step="100" value="2000"></td>
+						</tr>
+					</table>
+				</div>
+				<div>
+					<table class="form-table">
+						<tr>
+							<th><label>Prompt Template</label></th>
+							<td>
+								<textarea name="prompt" id="profile-prompt" rows="6" class="large-text" placeholder="Use {title}, {keyword}, {category}, {attributes}, {brand}, {sku}, {tags}, {description}, {image_count}"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<th><label>HTML Blueprint</label></th>
+							<td>
+								<textarea name="html_blueprint" id="profile-html-blueprint" rows="10" class="large-text" placeholder="<h2>Product Introduction</h2>..."></textarea>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
 			<p>
 				<button type="submit" class="button button-primary">Save Profile</button>
 				<button type="button" class="button" id="rg-ce-cancel-btn">Cancel</button>
@@ -97,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		document.getElementById('profile-id').value = '';
 		document.getElementById('form-title').innerText = 'Add New Profile';
 		formContainer.style.display = 'block';
+		window.scrollTo(0, 0);
 	});
 
 	cancelBtn.addEventListener('click', () => {
@@ -107,21 +129,28 @@ document.addEventListener('DOMContentLoaded', function() {
 		e.preventDefault();
 		const formData = new FormData(form);
 		const payload = {};
-		formData.forEach((value, key) => payload[key] = value);
-
-		const response = await fetch(restUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce
-			},
-			body: JSON.stringify(payload)
+		formData.forEach((value, key) => {
+			payload[key] = value;
 		});
 
-		if (response.ok) {
-			window.location.reload();
-		} else {
-			alert('Failed to save profile');
+		try {
+			const response = await fetch(restUrl, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': nonce
+				},
+				body: JSON.stringify(payload)
+			});
+
+			const result = await response.json();
+			if (response.ok) {
+				window.location.reload();
+			} else {
+				alert('Failed to save profile: ' + (result.message || 'Unknown error'));
+			}
+		} catch (error) {
+			alert('Error: ' + error.message);
 		}
 	});
 
@@ -131,12 +160,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		const id = row.dataset.id;
 
 		if (e.target.classList.contains('delete-profile')) {
-			if (!confirm('Are you sure?')) return;
+			if (!confirm('Are you sure you want to delete this profile?')) return;
 			const response = await fetch(`${restUrl}/${id}`, {
 				method: 'DELETE',
 				headers: { 'X-WP-Nonce': nonce }
 			});
-			if (response.ok) row.remove();
+			if (response.ok) {
+				row.remove();
+			} else {
+				alert('Failed to delete profile.');
+			}
 		}
 
 		if (e.target.classList.contains('edit-profile')) {
@@ -149,6 +182,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			document.getElementById('profile-name').value = profile.name;
 			document.getElementById('profile-provider').value = profile.provider;
 			document.getElementById('profile-model').value = profile.model;
+			document.getElementById('profile-writing-style').value = profile.writing_style || '';
+			document.getElementById('profile-temperature').value = profile.temperature || 0.7;
+			document.getElementById('profile-max-tokens').value = profile.max_tokens || 2000;
 			document.getElementById('profile-prompt').value = profile.prompt;
 			document.getElementById('profile-html-blueprint').value = profile.html_blueprint;
 

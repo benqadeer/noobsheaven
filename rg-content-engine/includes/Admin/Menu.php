@@ -94,7 +94,7 @@ class Menu {
 	}
 
 	public function render_dashboard() {
-		echo '<div class="wrap"><h1>RG Content Engine Dashboard</h1><p>Welcome to RanksGiving Content Engine.</p></div>';
+		include RG_CONTENT_ENGINE_PATH . 'admin/templates/dashboard.php';
 	}
 
 	public function render_profiles() {
